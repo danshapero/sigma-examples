@@ -13,7 +13,7 @@ implicit none
 !--------------------------------------------------------------------------!
 type :: triangle_mesh                                                      !
 !--------------------------------------------------------------------------!
-    integer :: num_nodes, num_edges, num_triangles
+    integer :: num_nodes = 0, num_edges = 0, num_triangles = 0
     integer, allocatable  :: edges(:,:), triangles(:,:), neighbors(:,:)
     integer, allocatable  :: node_boundary(:), edge_boundary(:)
     real(dp), allocatable :: x(:,:)
@@ -36,20 +36,19 @@ contains
 
 
 !--------------------------------------------------------------------------!
-subroutine read_mesh(mesh, filename)                                      !
+function read_mesh(mesh, filename) result(success)                         !
 !--------------------------------------------------------------------------!
-    ! input/output variables
     class(triangle_mesh), intent(inout) :: mesh 
     character(len=*), intent(in) :: filename
-    ! local variables
-    logical :: file_read_success
+    logical :: success
 
-    file_read_success = mesh%read_nodes(filename)
-    file_read_success = mesh%read_edges(filename)
-    file_read_success = mesh%read_triangles(filename)
-    file_read_success = mesh%read_neighbors(filename)
+    success = .true.
+    success = success .and. mesh%read_nodes(filename)
+    success = success .and. mesh%read_edges(filename)
+    success = success .and. mesh%read_triangles(filename)
+    success = success .and. mesh%read_neighbors(filename)
 
-end subroutine read_mesh
+end function read_mesh
 
 
 

@@ -15,8 +15,14 @@ implicit none
     real(dp), allocatable :: u(:), f(:), z(:)
     integer :: i, j, k, d, nn
     integer, allocatable :: nodes(:)
+    logical :: success
 
-    call mesh%read_mesh("meshes/helheim.1")
+    success = mesh%read_mesh("meshes/helheim.2")
+
+    if (.not. success) then
+        print *, "Oh no! Failed to read mesh!"
+        call exit(1)
+    endif
 
     nn = mesh%num_nodes
 
@@ -26,6 +32,8 @@ implicit none
     call B%set_dimensions(nn, nn)
     call A%set_graph(g)
     call B%set_graph(g)
+    call A%zero()
+    call B%zero()
 
     call fill_poisson_stiffness_matrix(A, mesh)
     call fill_p1_mass_matrix(B, mesh)

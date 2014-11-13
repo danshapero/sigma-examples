@@ -1,11 +1,20 @@
 
+import os
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 
+# ----------------------------------
+# Fetch the meshes from the internet
+url = "http://students.washington.edu/shapero/sigma-example-data/"
+for extension in ["node", "ele", "neigh", "edge", "poly"]:
+    os.system("wget " + url + "helheim.2." + extension + " -P meshes")
+
+
 # -----------------
 # Read in the nodes
-fid = open("meshes/helheim.1.node", "r")
+fid = open("meshes/helheim.2.node", "r")
 
 nn, _, _, _ = map(int, fid.readline().split())
 
@@ -20,7 +29,7 @@ fid.close()
 
 # ---------------------
 # Read in the triangles
-fid = open("meshes/helheim.1.ele", "r")
+fid = open("meshes/helheim.2.ele", "r")
 ne, _, _ = map(int, fid.readline().split())
 
 ele = np.zeros((ne, 3), dtype = int)
