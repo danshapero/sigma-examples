@@ -117,7 +117,7 @@ subroutine fill_poisson_stiffness_matrix(A, mesh)                          !
         det = V(1, 1)*V(2, 2) - V(1, 2)*V(2, 1)
         area = dabs(det) / 2
 
-        AE = area * matmul(V, transpose(V)) / 4
+        AE = 0.25 / area * matmul(V, transpose(V))
 
         call A%add(ele, ele, AE)
     enddo
@@ -152,7 +152,7 @@ subroutine fill_p1_mass_matrix(B, mesh)                                    !
                 BE(i, j) = x(i, ele(j)) - x(i, ele(3))
             enddo
         enddo
-        area = dabs(BE(1, 1)*BE(2, 2) - BE(1, 2)*BE(2, 1))
+        area = 0.5 * dabs(BE(1, 1)*BE(2, 2) - BE(1, 2)*BE(2, 1))
 
         BE = area / 12.0_dp
         do i = 1, 3
