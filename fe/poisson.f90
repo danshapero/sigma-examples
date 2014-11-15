@@ -17,7 +17,9 @@ implicit none
     integer, allocatable :: nodes(:)
     logical :: success
 
-    success = mesh%read_mesh("meshes/helheim.2")
+    call init_seed()
+
+    success = mesh%read_mesh("meshes/example.2")
 
     if (.not. success) then
         print *, "Oh no! Failed to read mesh!"
@@ -41,7 +43,10 @@ implicit none
     allocate(u(nn), f(nn), z(nn))
     u = 0.0_dp
     f = 0.0_dp
+
     call random_number(z)
+    z = z - 0.5_dp
+
     call B%matvec(z, f)
 
     d = g%get_max_degree()
@@ -68,7 +73,12 @@ implicit none
 
     call bcg%solve(A, u, f)
 
-    print *, minval(u), maxval(u)
+
+    open(file = "u.txt", unit = 10)
+    do i = 1, nn
+        write(10, *) u(i)
+    enddo
+    close(10)
 
 
     call bcg%destroy()
