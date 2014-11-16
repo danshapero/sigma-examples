@@ -76,10 +76,12 @@ implicit none
         endif
     enddo
 
+    print *, "    + Setting up BiCG-Stab solver and ILDU preconditioner."
 
     call bcg%setup(A)
+    call ildu%setup(A)
 
-    call bcg%solve(A, u, f)
+    call bcg%solve(A, u, f, ildu)
 
     print *, "    + Done solving Poisson problem."
     print *, "      BiCG-Stab solver iterations:", bcg%iterations
