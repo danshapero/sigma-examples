@@ -55,7 +55,7 @@ if not os.path.exists("example.poly"):
 if not os.path.exists("example.1.node"):
     coarse_area = 0.005
 
-    os.system("triangle -pqnea" + str(coarse_area) + " example.poly")
+    os.system("triangle -pqnea" + str(coarse_area) + " example.poly > /dev/null")
 
     # Load in the nodes of the generated mesh
     fid = open("example.1.node", "r")
@@ -110,5 +110,5 @@ if not os.path.exists("example.2.node"):
         fid.write("{0} {1}\n".format(k + 1, area[k]))
     fid.close()
 
-    os.system("triangle -rqnea example.1")
+    os.system("triangle -rqnea example.1 > /dev/null")
 

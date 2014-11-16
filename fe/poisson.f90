@@ -28,6 +28,11 @@ implicit none
 
     nn = mesh%num_nodes
 
+    print *, "    + Successfully read triangular mesh."
+    print *, "        - Number of nodes:    ", mesh%num_nodes
+    print *, "        - Number of edges:    ", mesh%num_edges
+    print *, "        - Number of triangles:", mesh%num_triangles
+
     allocate(g)
     call build_connectivity_graph(g, mesh)
     call A%set_dimensions(nn, nn)
@@ -39,6 +44,9 @@ implicit none
 
     call fill_poisson_stiffness_matrix(A, mesh)
     call fill_p1_mass_matrix(B, mesh)
+
+    print *, "    + Built finite element stiffness and mass matrices."
+    print *, "    + Generating random right-hand side for Poisson problem."
 
     allocate(u(nn), f(nn), z(nn))
     u = 0.0_dp
@@ -72,6 +80,10 @@ implicit none
     call bcg%setup(A)
 
     call bcg%solve(A, u, f)
+
+    print *, "    + Done solving Poisson problem."
+    print *, "      BiCG-Stab solver iterations:", bcg%iterations
+    print *, "    + Writing output to file u.txt."
 
 
     open(file = "u.txt", unit = 10)
