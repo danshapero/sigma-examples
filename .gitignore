@@ -1,0 +1,11 @@
+
+*.o
+*.pyc
+*~
+
+*.poly
+*.node
+*.ele
+*.edge
+*.neigh
+*.area
