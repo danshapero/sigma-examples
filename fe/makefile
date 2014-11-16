@@ -1,5 +1,6 @@
 
 TARGETS = poisson
+DATA = u.txt u.png meshes/example.*
 
 ROOT_DIR = ..
 include ../Rules.mk

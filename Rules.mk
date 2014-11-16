@@ -15,5 +15,5 @@ all: $(TARGETS)
 	$(FC) -o $@ -c $< $(FCFLAGS) $(IFLAGS)
 
 clean:
-	rm -rf *.o *.mod *.pyc $(TARGETS)
+	rm -rf *.o *.mod *.pyc $(TARGETS) $(DATA)
 
