@@ -5,14 +5,17 @@
 CC = gcc
 FC = gfortran
 
-FCFLAGS = -g -fbounds-check
 LFLAGS = -lsigma -L$(SIGMA_DIR)/lib
 IFLAGS = -I$(SIGMA_DIR)/include
+CCFLAGS = -std=c99
 
 all: $(TARGETS)
 
 %.o: %.f90
 	$(FC) -o $@ -c $< $(FCFLAGS) $(IFLAGS)
+
+%.o: %.c
+	$(CC) -o $@ -c $< $(CCFLAGS) $(IFLAGS)
 
 clean:
 	rm -rf *.o *.mod *.pyc $(TARGETS) $(DATA)
