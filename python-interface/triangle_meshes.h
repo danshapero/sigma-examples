@@ -12,5 +12,6 @@ typedef struct {
 } triangle_mesh;
 
 bool read_mesh(triangle_mesh *mesh, const char *filename);
+void destroy_mesh(triangle_mesh *mesh);
 
 #endif

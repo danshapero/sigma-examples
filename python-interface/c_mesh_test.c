@@ -16,7 +16,9 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    double *u = (double *) malloc( mesh.num_nodes * sizeof(double) );
+    printf("%d\n", mesh.num_nodes);
+
+    double *u = calloc(mesh.num_nodes, sizeof(double));
 
     for (int i = 0; i < mesh.num_nodes; i++) u[i] = 0.0;
 
@@ -24,6 +26,9 @@ int main(int argc, char **argv) {
             u, mesh.x, mesh.y, mesh.edges, mesh.triangles);
 
     printf("%lf %lf\n", u[0], u[1]);
+
+    free(u);
+    destroy_mesh(&mesh);
 
     return 0;
 }
