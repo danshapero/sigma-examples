@@ -5,6 +5,6 @@ DATA = meshes/example.*
 ROOT_DIR = ..
 include ../Rules.mk
 
-c_mesh_test: triangle_meshes.o glue.o c_mesh_test.o
+c_mesh_test: triangle_meshes.o fe.o glue.o c_mesh_test.o
 	$(CC) -o $@ $^ $(LFLAGS) $(CCFLAGS) -lgfortran
 
