@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define max(a, b) (a < b) ? b : a;
+#define min(a, b) (a < b) ? a : b;
 
 int main(int argc, char **argv) {
     triangle_mesh mesh;
@@ -16,16 +18,21 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("%d\n", mesh.num_nodes);
-
     double *u = calloc(mesh.num_nodes, sizeof(double));
 
     for (int i = 0; i < mesh.num_nodes; i++) u[i] = 0.0;
 
     driver(mesh.num_nodes, mesh.num_edges, mesh.num_triangles,
-            u, mesh.x, mesh.y, mesh.edges, mesh.triangles);
+            mesh.x, mesh.y, mesh.edges, mesh.triangles, mesh.node_boundary, u);
 
-    printf("%lf %lf\n", u[0], u[1]);
+    double mi = 0.0, ma = 0.0;
+
+    for (int i = 0; i < mesh.num_nodes; i++) {
+        mi = min(mi, u[i]);
+        ma = max(ma, u[i]);
+    }
+
+    printf("%g %g\n", mi, ma);
 
     free(u);
     destroy_mesh(&mesh);

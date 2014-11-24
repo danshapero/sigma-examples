@@ -77,6 +77,80 @@ end subroutine build_connectivity_graph
 
 
 
+!--------------------------------------------------------------------------!
+subroutine fill_poisson_stiffness_matrix(A, x, y, triangles)               !
+!--------------------------------------------------------------------------!
+    ! input/output variables
+    class(sparse_matrix_interface), intent(inout) :: A
+    real(dp), intent(in) :: x(:), y(:)
+    integer, intent(in) :: triangles(:,:)
+    ! local variables
+    integer :: i, j, k, n, nt, ele(3)
+    real(dp) :: AE(3, 3), V(3, 2), det, area
+
+    call A%zero()
+
+    nt = size(triangles, 2)
+    do n = 1, nt
+        ele = triangles(:, n)
+        AE = 0.0_dp
+
+        do i = 1, 3
+            j = ele(mod(i, 3)   + 1)
+            k = ele(mod(i+1, 3) + 1)
+
+            V(i, 1) = y(j) - y(k)
+            V(i, 2) = x(k) - x(j)
+        enddo
+
+        det = V(1, 1)*V(2, 2) - V(1, 2)*V(2, 1)
+        area = dabs(det) / 2
+
+        AE = 0.25 / area * matmul(V, transpose(V))
+
+        call A%add(ele, ele, AE)
+    enddo
+
+end subroutine fill_poisson_stiffness_matrix
+
+
+
+!--------------------------------------------------------------------------!
+subroutine fill_p1_mass_matrix(B, x, y, triangles)                         !
+!--------------------------------------------------------------------------!
+    ! input/output variables
+    class(sparse_matrix_interface), intent(inout) :: B
+    real(dp), intent(in) :: x(:), y(:)
+    integer, intent(in) :: triangles(:,:)
+    ! local variables
+    integer :: i, j, k, n, nt, ele(3)
+    real(dp) :: BE(3, 3), area
+
+    call B%zero()
+
+    nt = size(triangles, 2)
+    do n = 1, nt
+        ele = triangles(:, n)
+        BE = 0.0_dp
+
+        do i = 1, 2
+            BE(1, i) = x(ele(i)) - x(ele(3))
+            BE(2, i) = y(ele(i)) - y(ele(3))
+        enddo
+        area = dabs(BE(1, 1)*BE(2, 2) - BE(1, 2)*BE(2, 1)) / 2
+
+        BE = area / 12.0_dp
+        do i = 1, 3
+            BE(i, i) = area / 6.0_dp
+        enddo
+
+        call B%add(ele, ele, BE)
+    enddo
+
+end subroutine fill_p1_mass_matrix
+
+
 
 
 end module fe
+
