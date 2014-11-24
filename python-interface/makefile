@@ -1,10 +1,10 @@
 
-TARGETS = c_mesh_test
+TARGETS = poisson
 DATA = meshes/example.*
 
 ROOT_DIR = ..
 include ../Rules.mk
 
-c_mesh_test: triangle_meshes.o fe.o glue.o c_mesh_test.o
+poisson: triangle_meshes.o fe.o glue.o poisson.o
 	$(CC) -o $@ $^ $(LFLAGS) $(CCFLAGS) -lgfortran
 
