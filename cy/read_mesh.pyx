@@ -42,9 +42,9 @@ def read_mesh(filename):                                                       #
     cdef int[:] boundary = np.zeros(num_nodes, dtype=np.int)
     for i in range(num_nodes):
         line = fid.readline().split()
-        x[i] = <double>line[1]
-        y[i] = <double>line[2]
-        boundary[i] = <int>line[3]
+        x[i] = float(line[1])
+        y[i] = float(line[2])
+        boundary[i] = int(line[3])
 
     fid.close()
 
@@ -56,9 +56,9 @@ def read_mesh(filename):                                                       #
     cdef int[:] edge_boundary = np.zeros(num_edges, dtype=np.int)
     for i in range(num_edges):
         line = fid.readline().split()[1:]
-        edges[i, 0] = <int>line[0]
-        edges[i, 1] = <int>line[1]
-        edge_boundary[i] = <int>line[2]
+        edges[i, 0] = int(line[0])
+        edges[i, 1] = int(line[1])
+        edge_boundary[i] = int(line[2])
 
     fid.close()
 
@@ -69,9 +69,9 @@ def read_mesh(filename):                                                       #
     cdef int[:,:] triangles = np.zeros((num_triangles,3), dtype=np.int)
     for i in range(num_triangles):
         line = fid.readline().split()[1:]
-        triangles[i, 0] = <int>line[0]
-        triangles[i, 1] = <int>line[1]
-        triangles[i, 2] = <int>line[2]
+        triangles[i, 0] = int(line[0])
+        triangles[i, 1] = int(line[1])
+        triangles[i, 2] = int(line[2])
 
     fid.close()
 
@@ -79,6 +79,13 @@ def read_mesh(filename):                                                       #
     cdef double[:] u = np.zeros(num_nodes, dtype=np.double)
     make_a_thing(num_nodes, &x[0], &y[0], &u[0])
 
-    return x, y, boundary, edges, triangles, u
+    X = np.asarray(x)
+    Y = np.asarray(y)
+    U = np.asarray(u)
+    Boundary = np.asarray(boundary)
+    Edges = np.asarray(edges)
+    Triangles = np.asarray(triangles)
+
+    return X, Y, Boundary, Edges, Triangles, U
 
 
