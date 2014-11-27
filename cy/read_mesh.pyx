@@ -26,6 +26,7 @@ def read_mesh(filename):                                                       #
     boundary: the boundary marker of each node
     edges: list of all edges of the triangulation
     triangles: list of all triangles
+    u: some stuff that we computed with an external C function
     '''
     cdef int num_nodes = 0
     cdef int num_edges = 0
@@ -39,7 +40,7 @@ def read_mesh(filename):                                                       #
 
     cdef double[:] x = np.zeros(num_nodes, dtype=np.double)
     cdef double[:] y = np.zeros(num_nodes, dtype=np.double)
-    cdef int[:] boundary = np.zeros(num_nodes, dtype=np.int)
+    cdef int[:] boundary = np.zeros(num_nodes, dtype=np.int32)
     for i in range(num_nodes):
         line = fid.readline().split()
         x[i] = float(line[1])
@@ -52,8 +53,8 @@ def read_mesh(filename):                                                       #
     fid = open(filename + ".edge", "r")
     num_edges, _ = map(int, fid.readline().split())
 
-    cdef int[:,:] edges = np.zeros((num_edges,2), dtype=np.int)
-    cdef int[:] edge_boundary = np.zeros(num_edges, dtype=np.int)
+    cdef int[:,:] edges = np.zeros((num_edges,2), dtype=np.int32)
+    cdef int[:] edge_boundary = np.zeros(num_edges, dtype=np.int32)
     for i in range(num_edges):
         line = fid.readline().split()[1:]
         edges[i, 0] = int(line[0])
@@ -66,7 +67,7 @@ def read_mesh(filename):                                                       #
     fid = open(filename + ".ele", "r")
     num_triangles, _, _ = map(int, fid.readline().split())
 
-    cdef int[:,:] triangles = np.zeros((num_triangles,3), dtype=np.int)
+    cdef int[:,:] triangles = np.zeros((num_triangles,3), dtype=np.int32)
     for i in range(num_triangles):
         line = fid.readline().split()[1:]
         triangles[i, 0] = int(line[0])
