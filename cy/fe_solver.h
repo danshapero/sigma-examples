@@ -12,5 +12,5 @@ void fe_solve(  int num_nodes,
                 int boundary[num_nodes],
                 double u[num_nodes] );
 
-#endif FE_SOLVER_H
+#endif
 
