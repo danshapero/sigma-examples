@@ -7,7 +7,8 @@ FC = gfortran
 
 LFLAGS = -lsigma -L$(SIGMA_DIR)/lib
 IFLAGS = -I$(SIGMA_DIR)/include
-CCFLAGS = -std=c99
+CCFLAGS = -std=c99 -fPIC
+FCFLAGS = -fPIC
 
 all: $(TARGETS)
 

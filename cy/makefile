@@ -1,18 +1,20 @@
 
-CC = gcc
-CCFLAGS = -std=c99
+TARGETS = read_mesh.so read_mesh.c
+
+ROOT_DIR = ..
+include ../Rules.mk
 
 meshes:
 	cd meshes && python make_mesh.py && cd ../
 
-libthingy.so: thingy.o
-	$(CC) -shared -o libthingy.so thingy.o -lm
+read_mesh.c: read_mesh.pyx
+	cython read_mesh.pyx
 
-thingy.o: thingy.c thingy.h
-	$(CC) -c thingy.c $(CCFLAGS) -fPIC
+read_mesh.o: read_mesh.c
+	$(CC) -c read_mesh.c -pthread -O2 -fwrapv -fno-strict-aliasing -I/usr/include/python2.7 $(CCFLAGS)
 
-read_mesh.so: libthingy.so
-	LDFLAGS="-L./" python setup.py build_ext --inplace
+read_mesh.so: read_mesh.o fe.o fe_solver.o
+	$(CC) -shared -o read_mesh.so fe.o fe_solver.o read_mesh.o -lgfortran $(LFLAGS)
 
 all: read_mesh.so meshes
 
