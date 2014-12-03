@@ -10,6 +10,7 @@ void fe_solve(  int num_nodes,
                 int edges[2 * num_edges],
                 int triangles[3 * num_triangles],
                 int boundary[num_nodes],
+                double f[num_nodes],
                 double u[num_nodes] );
 
 #endif

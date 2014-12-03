@@ -15,7 +15,7 @@ contains
 
 !--------------------------------------------------------------------------!
 subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
-                        & x, y, edges, triangles, boundary, u) bind(c)     !
+                        & x, y, edges, triangles, boundary, f, u) bind(c)  !
 !--------------------------------------------------------------------------!
     ! imput/output variables
     integer(c_int), intent(in), value :: num_nodes, num_edges, num_triangles
@@ -23,6 +23,7 @@ subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
     integer(c_int), intent(in) :: edges(2, num_edges), &
                                 & triangles(3, num_triangles), &
                                 & boundary(num_nodes)
+    real(c_double), intent(in)    :: f(num_nodes)
     real(c_double), intent(inout) :: u(num_nodes)
     ! local variables
     integer :: i, j, k, d
@@ -31,7 +32,7 @@ subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
     type(csr_matrix) :: A, B
     type(bicgstab_solver) :: bcg
     type(sparse_ldu_solver) :: ildu
-    real(dp) :: f(num_nodes), z(num_nodes)
+    real(dp) :: z(num_nodes)
 
     allocate(g)
     call build_connectivity_graph(g, num_nodes, num_edges, edges)
@@ -48,14 +49,10 @@ subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
     call fill_p1_mass_matrix(B, x, y, triangles)
 
     u = 0.0_dp
-    f = 0.0_dp
 
     call init_seed()
 
-    call random_number(z)
-    z = z - 0.5_dp
-
-    call B%matvec(z, f)
+    call B%matvec(f, z)
 
     d = g%get_max_degree()
     allocate(nodes(d))
@@ -72,14 +69,14 @@ subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
 
             call A%set(i, i, 1.0_dp)
 
-            f(i) = 0.0_dp
+            z(i) = 0.0_dp
         endif
     enddo
 
     call bcg%setup(A)
     call ildu%setup(A)
 
-    call bcg%solve(A, u, f, ildu)
+    call bcg%solve(A, u, z, ildu)
 
     call bcg%destroy()
     call ildu%destroy()
