@@ -34,34 +34,46 @@ subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
     type(sparse_ldu_solver) :: ildu
     real(dp) :: z(num_nodes)
 
+    ! Create a sparse graph `g` representing the connectivity between the
+    ! nodes of the triangulation
     allocate(g)
     call build_connectivity_graph(g, num_nodes, num_edges, edges)
 
+    ! Initialize the stiffness matrix `A` and the mass matrix `B`.
     call A%set_dimensions(num_nodes, num_nodes)
     call B%set_dimensions(num_nodes, num_nodes)
 
+    ! `A` and `B` share the same connectivity structure `g`. The operation
+    ! `set_graph` only associated pointers, so there is no memory copy here.
     call A%set_graph(g)
     call B%set_graph(g)
+
     call A%zero()
     call B%zero()
 
+    ! Golly, what could these subroutines possibly be doing...
     call fill_poisson_stiffness_matrix(A, x, y, triangles)
     call fill_p1_mass_matrix(B, x, y, triangles)
 
     u = 0.0_dp
 
-    call init_seed()
-
+    ! Fill the load vector `z` based on the nodal values of the right-
+    ! hand side of the PDE.
     call B%matvec(f, z)
 
     d = g%get_max_degree()
     allocate(nodes(d))
 
+    ! Loop through every node of the triangulation,
     do i = 1, num_nodes
+        ! and look for any boundary points;
         if (boundary(i) /= 0) then
             call g%get_neighbors(nodes, i)
             d = g%get_degree(i)
 
+            ! force any boundary nodes to have the correct Dirichlet
+            ! boundary values by setting the corresponding matrix row to
+            ! 0.0 with 1.0 on the diagonal.
             do k = 1, d
                 j = nodes(k)
                 call A%set(i, j, 0.0_dp)
@@ -73,11 +85,14 @@ subroutine fe_solve(num_nodes, num_edges, num_triangles, &                 !
         endif
     enddo
 
+    ! Set up a Krylov subspace solver `bcg` and an incomplete factorization
+    ! preconditioner `ildu`, and solve the linear system.
     call bcg%setup(A)
     call ildu%setup(A)
 
     call bcg%solve(A, u, z, ildu)
 
+    ! Destroy any data structures with heap-allocated components.
     call bcg%destroy()
     call ildu%destroy()
     call B%destroy()

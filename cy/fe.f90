@@ -91,11 +91,19 @@ subroutine fill_poisson_stiffness_matrix(A, x, y, triangles)               !
     call A%zero()
 
     nt = size(triangles, 2)
+
+    ! Loop over every triangle of the mesh
     do n = 1, nt
-        ele = triangles(:, n)
+        ! Zero out the element stiffness matrix
         AE = 0.0_dp
 
+        ! Get the nodes of the current triangle
+        ele = triangles(:, n)
+
+        ! Loop over each node of the current triangle
         do i = 1, 3
+            ! Let `j`, `k` be the next nodes around the triangle, going
+            ! counter-clockwise
             j = ele(mod(i, 3)   + 1)
             k = ele(mod(i+1, 3) + 1)
 
@@ -106,8 +114,13 @@ subroutine fill_poisson_stiffness_matrix(A, x, y, triangles)               !
         det = V(1, 1)*V(2, 2) - V(1, 2)*V(2, 1)
         area = dabs(det) / 2
 
+        ! Compute the element stiffness matrix. See "Numerical Treatment of
+        ! Partial Differential Equations" by Grossmann, Roos & Stynes for a
+        ! derivation of this formula.
         AE = 0.25 / area * matmul(V, transpose(V))
 
+        ! Add the contribution from this triangle's stiffness matrix to the
+        ! global stiffness matrix
         call A%add(ele, ele, AE)
     enddo
 
