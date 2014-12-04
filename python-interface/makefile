@@ -4,7 +4,7 @@ TARGETS = sigma_wrapper.so sigma_wrapper.c
 ROOT_DIR = ..
 include ../Rules.mk
 
-meshes:
+mesh:
 	cd meshes && python make_mesh.py && cd ../
 
 sigma_wrapper.c: sigma_wrapper.pyx
