@@ -3,7 +3,7 @@ import numpy as np
 cimport numpy as np
 
 
-cdef extern from "fe_solver.h":
+cdef extern:
     void fe_solve(  int num_nodes,
                     int num_edges,
                     int num_triangles,
