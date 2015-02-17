@@ -20,6 +20,7 @@ subroutine build_connectivity_graph(g, nn, ne, mesh_edges)                 !
     ! local variables
     integer :: i, j, k
 
+    call g%init(nn, nn)
     call g%build(nn, nn, get_edges, make_cursor)
 
 contains
@@ -153,4 +154,3 @@ end subroutine fill_p1_mass_matrix
 
 
 end module fe
-

@@ -30,6 +30,7 @@ subroutine build_connectivity_graph(g, mesh)                               !
 
     nn = mesh%num_nodes
 
+    call g%init(nn, nn)
     call g%build(nn, nn, get_edges, make_cursor)
 
 contains
@@ -171,4 +172,3 @@ end subroutine fill_p1_mass_matrix
 
 
 end module fe
-
